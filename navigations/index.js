@@ -28,7 +28,10 @@ const HomeTab = createBottomTabNavigator({
                          getActiveChildNavigationOptions(navigation, screenProps),
     tabBarOptions:     {
       activeTintColor:   styles.colorMain,
-      inactiveTintColor: styles.colorSub
+      inactiveTintColor: styles.colorSub,
+      style:             {
+        borderTopColor: '#eeeeee',
+      }
     }
   })
 

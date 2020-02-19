@@ -43,9 +43,10 @@ export default Header
 
 const _style = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    padding:       10,
-    alignItems:    'center'
+    flexDirection:     'row',
+    paddingHorizontal: 15,
+    paddingVertical:   10,
+    alignItems:        'center'
   },
   search: {
     flexDirection:   'row',
