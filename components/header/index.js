@@ -1,4 +1,4 @@
-import React                 from 'react'
+import React, { memo }       from 'react'
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import PropTypes             from 'prop-types'
 import { STATUS_BAR_HEIGHT } from '../../constants'
 import * as styles           from '../../styles'
 
-function Header({
+const Header = memo(function ({
   title
 }) {
   return (
@@ -33,7 +33,7 @@ function Header({
       </View>
     </View>
   )
-}
+})
 
 Header.propTypes = {
   title: PropTypes.string.isRequired

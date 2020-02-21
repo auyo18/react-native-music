@@ -1,7 +1,6 @@
 import React          from 'react'
-import { Text, View } from 'react-native'
-import { Iconfont }   from '../../components'
-import { HOME_MENU }  from '../../constants'
+import { Header, Iconfont } from '../../components'
+import { HOME_MENU }        from '../../constants'
 
 const {
         User: UserMenu
@@ -10,11 +9,9 @@ const title = UserMenu.name
 
 function User() {
   return (
-    <View>
-      <Text>
-        User
-      </Text>
-    </View>
+    <>
+      <Header title={title}/>
+    </>
   )
 }
 

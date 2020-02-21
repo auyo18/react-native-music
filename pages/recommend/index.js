@@ -1,38 +1,43 @@
 import React, {
   useEffect,
   useCallback,
-  memo, useMemo
+  memo,
+  useMemo,
 }                       from 'react'
 import {
   Text,
   ScrollView,
   View,
   Image,
-  FlatList,
   StyleSheet
 }                       from 'react-native'
 import Swiper           from 'react-native-swiper'
 import {
   Iconfont,
-  Header
+  Header,
+  MusicList,
+  PlaylistItem
 }                       from '../../components'
 import PropTypes        from 'prop-types'
 import {
   HOME_MENU,
 }                       from '../../constants'
 import {
-  handleNum,
-  handleSinger
+  normalizeSongs
 }                       from '../../utils'
 import { connect }      from 'react-redux'
 import {
-  setBanner,
-  setAlbums,
-  setRecomPlaylist,
+  setRecommend,
   setPlaylist,
+  setCurrentIndex,
 }                       from '../../store'
-import { getRecommend } from '../../api'
 import * as styles      from '../../styles'
+import {
+  Foundation,
+  Ionicons,
+  MaterialCommunityIcons,
+}                       from '@expo/vector-icons'
+import Navigation       from '../../utils/navigation'
 
 const {
         Recommend: RecommendMenu
@@ -48,7 +53,7 @@ const PlayItem = memo(function ({
     <View style={{ width: '50%', marginVertical: 10 }}>
       <Image
         source={{ uri: cover }}
-        style={{ width: 185, height: 185, borderRadius: 5 }}
+        style={{ width: 185, height: 185, borderRadius: 5, backgroundColor: styles.colorDesc }}
       />
       <Text
         numberOfLines={1}
@@ -65,82 +70,10 @@ PlayItem.propTypes = {
   nick:  PropTypes.string.isRequired,
 }
 
-const Item = memo(function ({
-  cover,
-  title,
-  number,
-  singers
-}) {
-  const formalNum  = useMemo(() => handleNum(number), [number])
-  const singerName = useMemo(() => handleSinger(singers), [singers])
-  return (
-    <View style={{ width: 120, marginVertical: 10, marginHorizontal: 4 }}>
-      <View style={{ borderRadius: 5, overflow: 'hidden' }}>
-        <Image
-          source={{ uri: cover }}
-          style={{ width: 120, height: 120 }}
-        />
-        <View
-          style={{
-            position:        'absolute',
-            top:             0,
-            bottom:          0,
-            left:            0,
-            right:           0,
-            backgroundColor: 'rgba(0,0,0,.2)',
-          }}
-        />
-        <View
-          style={{
-            flexDirection:  'row',
-            position:       'absolute',
-            bottom:         0,
-            left:           0,
-            width:          '100%',
-            padding:        5,
-            alignItems:     'center',
-            justifyContent: 'space-between',
-          }}>
-          <Text
-            style={{
-              color:    'white',
-              fontSize: styles.font_size_small,
-            }}
-          >{formalNum}</Text>
-          <Iconfont name='play' color='white'/>
-        </View>
-      </View>
-      <Text
-        numberOfLines={2}
-        style={{ marginTop: 10 }}
-      >
-        {title}
-      </Text>
-      {
-        Boolean(singerName) &&
-        <Text
-          style={{
-            color:     styles.colorDesc,
-            fontSize:  styles.font_size_small,
-            marginTop: 5
-          }}
-        >
-          {singerName}
-        </Text>
-      }
-    </View>
-  )
-})
-
-Item.propTypes = {
-  cover:   PropTypes.string.isRequired,
-  title:   PropTypes.string.isRequired,
-  number:  PropTypes.number,
-  singers: PropTypes.array,
-}
-
 const Banner = memo(function ({
-  uri
+  uri,
+  titleColor,
+  typeTitle
 }) {
   return (
     <View
@@ -152,66 +85,175 @@ const Banner = memo(function ({
     >
       <Image
         source={{ uri }}
-        style={{ width: '100%', height: 160, borderRadius: 5 }}
+        style={{ width: '100%', height: 140, borderRadius: 5, backgroundColor: styles.colorDesc }}
+        resizeMode='stretch'
       />
+      <View
+        style={{
+          position:              'absolute',
+          bottom:                10,
+          right:                 15,
+          paddingVertical:       3,
+          paddingHorizontal:     5,
+          backgroundColor:       titleColor,
+          borderTopStartRadius:  5,
+          borderBottomEndRadius: 5
+        }}
+      >
+        <Text style={{
+          color: styles.colorLight,
+        }}>{typeTitle}</Text>
+      </View>
     </View>
   )
 })
 
 Banner.propTypes = {
-  uri: PropTypes.string.isRequired
+  uri:        PropTypes.string.isRequired,
+  titleColor: PropTypes.string.isRequired,
+  typeTitle:  PropTypes.string.isRequired,
+}
+
+const Menu = memo(function ({
+  Icons,
+  icon,
+  name,
+  isEveryday
+}) {
+  return (
+    <View style={{ alignItems: 'center' }}>
+      {
+        isEveryday &&
+        <Text
+          style={{ position: 'absolute', color: styles.colorMain, top: 11, fontSize: styles.font_size_small }}
+        >{new Date().getDate()}</Text>
+      }
+      <Iconfont
+        Icons={Icons}
+        name={icon}
+        color={styles.colorMain}
+        size={30}
+      />
+      <View>
+
+      </View>
+      <Text style={{ marginTop: 10, color: styles.colorSub }}>{name}</Text>
+    </View>
+  )
+})
+
+Menu.propTypes = {
+  Icons:      PropTypes.func.isRequired,
+  icon:       PropTypes.string.isRequired,
+  name:       PropTypes.string.isRequired,
+  isEveryday: PropTypes.bool.isRequired,
 }
 
 function Recommend({
   banners,
-  albums,
-  recomPlaylist,
-  playlist,
-  setBanner,
-  setAlbums,
-  setRecomPlaylist,
-  setPlaylist,
+  personalizedPlaylist,
+  topList,
+  setRecommend,
+  navigation
 }) {
-  const getData = useCallback(async () => {
-    const data = await getRecommend()
-    const {
-            response: {
-                        focus:         { data: { content } },
-                        new_album:     { data: { albums } },
-                        recomPlaylist: { data: { v_hot } },
-                        playlist:      { data: { v_playlist } },
-                      }
-          }    = data
-    setBanner(content)
-    setAlbums(albums)
-    setRecomPlaylist(v_hot)
-    setPlaylist(v_playlist)
-    console.log(data, v_playlist)
-  }, [setBanner, setAlbums, setRecomPlaylist, setPlaylist])
+  Navigation.setNavigation(navigation)
+
+  const localTopList = useMemo(() => normalizeSongs(topList.slice(0, 20)), [topList])
+
+  const setData = useCallback(async () => {
+    setRecommend()
+  }, [setRecommend])
+
+  const menu = [
+    { name: '每日推荐', Icons: Ionicons, icon: 'ios-calendar' },
+    { name: '歌单', Icons: Ionicons, icon: 'md-list-box' },
+    { name: '排行榜', Icons: Foundation, icon: 'graph-bar' },
+    { name: '电台', Icons: Ionicons, icon: 'ios-radio' },
+    { name: '直播', Icons: MaterialCommunityIcons, icon: 'youtube-tv' },
+  ]
+
+
+  /*const setPlayer = index => {
+    setPlaylist(localTopList)
+    setCurrentIndex(index)
+    Navigation.goPage('Player')
+  }*/
 
   useEffect(() => {
-    getData()
-  }, [getData])
+    setData()
+  }, [setData])
 
   return (
     <>
       <Header title={title}/>
       <ScrollView style={{ backgroundColor: styles.full_base }}>
         <Swiper
-          style={{ height: 190 }}
+          style={{ height: 170 }}
           dotColor='rgba(255,255,255,.2)'
-          activeDotColor='white'
+          activeDotColor={styles.colorMain}
         >
           {
             banners.map(banner => (
               <Banner
-                key={banner.id}
-                uri={banner.pic_info.url}
+                key={banner.targetId}
+                uri={banner.pic}
+                titleColor={banner.titleColor}
+                typeTitle={banner.typeTitle}
               />
             ))
           }
         </Swiper>
+        <View style={[_style.module, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 15 }]}>
+          {
+            menu.map((item, index) => (
+              <Menu
+                key={item.name}
+                Icons={item.Icons}
+                icon={item.icon}
+                name={item.name}
+                isEveryday={index === 0}
+              />
+            ))
+          }
+        </View>
         <View style={_style.module}>
+          <Text style={_style.moduleSubTitle}>
+            排行榜
+          </Text>
+          <Text style={_style.moduleTitle}>
+            热歌风向标
+          </Text>
+          <View style={[_style.paddingHorizontal, { marginVertical: 20 }]}>
+            <MusicList
+              list={localTopList}
+            />
+          </View>
+        </View>
+        <View style={[_style.module, { marginVertical: 20 }]}>
+          <Text style={_style.moduleSubTitle}>
+            推荐歌单
+          </Text>
+          <Text style={_style.moduleTitle}>
+            为你精挑细选
+          </Text>
+          <View
+            style={{ flexDirection: 'row', paddingHorizontal: 10, flexWrap: 'wrap', justifyContent: 'space-between' }}
+          >
+            {
+              personalizedPlaylist.map(item => (
+                <PlaylistItem
+                  key={item.id}
+                  id={item.id}
+                  cover={item.picUrl}
+                  title={item.name}
+                  number={item.playCount}
+                />
+              ))
+            }
+          </View>
+        </View>
+
+        {/*<View style={_style.module}>
           <Text style={_style.moduleTitle}>
             达人歌单
           </Text>
@@ -233,8 +275,8 @@ function Recommend({
             </View>
 
           </ScrollView>
-        </View>
-        <View style={_style.module}>
+        </View>*/}
+        {/*<View style={_style.module}>
           <Text style={_style.moduleTitle}>
             推荐歌单
           </Text>
@@ -253,8 +295,8 @@ function Recommend({
               )}
             />
           </View>
-        </View>
-        <View style={_style.module}>
+        </View>*/}
+        {/*<View style={_style.module}>
           <Text style={_style.moduleTitle}>
             最新专辑
           </Text>
@@ -277,7 +319,7 @@ function Recommend({
               }
             </View>
           </ScrollView>
-        </View>
+        </View>*/}
       </ScrollView>
     </>
   )
@@ -290,24 +332,20 @@ Recommend.navigationOptions = {
 }
 
 const mapStateToProps    = state => ({
-  banners:       state.recommend.banners,
-  albums:        state.recommend.albums,
-  recomPlaylist: state.recommend.recomPlaylist,
-  playlist:      state.recommend.playlist,
+  banners:              state.recommend.banners,
+  personalizedPlaylist: state.recommend.personalizedPlaylist,
+  topList:              state.recommend.topList,
 })
 const mapDispatchToProps = dispatch => ({
-  setBanner(b) {
-    dispatch(setBanner(b))
-  },
-  setRecomPlaylist(r) {
-    dispatch(setRecomPlaylist(r))
-  },
-  setAlbums(a) {
-    dispatch(setAlbums(a))
+  setRecommend() {
+    dispatch(setRecommend())
   },
   setPlaylist(p) {
     dispatch(setPlaylist(p))
-  }
+  },
+  setCurrentIndex(i) {
+    dispatch(setCurrentIndex(i))
+  },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Recommend)
@@ -317,12 +355,19 @@ const _style = StyleSheet.create({
     marginVertical: 10,
   },
   moduleTitle:       {
-    fontSize:          styles.font_size_large,
-    fontWeight:        'bold',
-    marginBottom:      10,
-    paddingHorizontal: 15
+    fontSize:       styles.font_size_large,
+    fontWeight:     'bold',
+    marginVertical: 10,
+    paddingLeft:    15
+  },
+  moduleSubTitle:    {
+    paddingHorizontal: 15,
+    color:             styles.colorDesc
   },
   paddingHorizontal: {
     paddingHorizontal: 15
+  },
+  menuIconBox:       {
+    backgroundColor: styles.colorMain
   }
 })

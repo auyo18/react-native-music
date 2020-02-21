@@ -1,15 +1,13 @@
 import {
   ACTION_SET_BANNERS,
-  ACTION_SET_ALBUMS,
-  ACTION_SET_RECOM_PLAYLIST,
-  ACTION_SET_PLAYLIST,
+  ACTION_SET_PERSONALIZED_PLAYLIST,
+  ACTION_SET_TOP_LIST,
 } from './actions'
 
 const defaultState = {
-  banners:       [],
-  albums:        [],
-  recomPlaylist: [],
-  playlist:      []
+  banners:              [], // 发现页面banner图
+  personalizedPlaylist: [], // 推荐歌单
+  topList:              [], // 热歌排行榜
 }
 
 export default (state = defaultState, action) => {
@@ -19,17 +17,13 @@ export default (state = defaultState, action) => {
       return Object.assign({}, state, {
         banners: payload
       })
-    case ACTION_SET_ALBUMS:
+    case ACTION_SET_PERSONALIZED_PLAYLIST:
       return Object.assign({}, state, {
-        albums: payload
+        personalizedPlaylist: payload
       })
-    case ACTION_SET_RECOM_PLAYLIST:
+    case ACTION_SET_TOP_LIST:
       return Object.assign({}, state, {
-        recomPlaylist: payload
-      })
-    case ACTION_SET_PLAYLIST:
-      return Object.assign({}, state, {
-        playlist: payload
+        topList: payload
       })
     default:
       return state

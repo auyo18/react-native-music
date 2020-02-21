@@ -1,7 +1,6 @@
-import React          from 'react'
-import { Text, View } from 'react-native'
-import { Iconfont }   from '../../components'
-import { HOME_MENU }  from '../../constants'
+import React                from 'react'
+import { Header, Iconfont } from '../../components'
+import { HOME_MENU }        from '../../constants'
 
 const {
         Singer: SingerMenu
@@ -10,11 +9,9 @@ const title = SingerMenu.name
 
 function Singer() {
   return (
-    <View>
-      <Text>
-        Singer
-      </Text>
-    </View>
+    <>
+      <Header title={title}/>
+    </>
   )
 }
 

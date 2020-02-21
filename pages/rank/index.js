@@ -1,7 +1,6 @@
 import React          from 'react'
-import { View, Text } from 'react-native'
-import { Iconfont }   from '../../components'
-import { HOME_MENU }  from '../../constants'
+import { Header, Iconfont } from '../../components'
+import { HOME_MENU }        from '../../constants'
 
 const {
         Rank: RankMenu
@@ -10,11 +9,9 @@ const title = RankMenu.name
 
 function Rank() {
   return (
-    <View>
-      <Text>
-        Rank
-      </Text>
-    </View>
+    <>
+      <Header title={title}/>
+    </>
   )
 }
 

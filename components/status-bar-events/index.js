@@ -1,10 +1,11 @@
-import React                from 'react'
+import React, { memo }      from 'react'
 import { StatusBar }        from 'react-native'
 import { NavigationEvents } from 'react-navigation'
 import { IOS }              from '../../constants'
 import * as styles          from '../../styles'
+import PropTypes            from 'prop-types'
 
-export default function StatusBarEvents({
+const StatusBarEvents = memo(function ({
   backgroundColor,
   barStyle,
   translucent,
@@ -35,7 +36,7 @@ export default function StatusBarEvents({
       <NavigationEvents {...props} />
     </>
   )
-}
+})
 
 StatusBarEvents.defaultProps = {
   backgroundColor: styles.full_base,
@@ -44,3 +45,13 @@ StatusBarEvents.defaultProps = {
   animated:        IOS,
   action:          'onDidFocus'
 }
+
+StatusBarEvents.propTypes = {
+  backgroundColor: PropTypes.string.isRequired,
+  barStyle:        PropTypes.string.isRequired,
+  translucent:     PropTypes.bool.isRequired,
+  animated:        PropTypes.bool.isRequired,
+  action:          PropTypes.string.isRequired,
+}
+
+export default StatusBarEvents

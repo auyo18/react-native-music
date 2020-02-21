@@ -1,6 +1,5 @@
 import { createStackNavigator } from 'react-navigation-stack'
 import {
-  createSwitchNavigator,
   createAppContainer,
   getActiveChildNavigationOptions
 }                               from 'react-navigation'
@@ -12,6 +11,8 @@ import {
   Singer,
   Rank,
   Search,
+  Player,
+  Playlist,
 }                               from '../pages'
 import { initialHomeTabName }   from '../constants'
 import * as styles              from '../styles'
@@ -37,6 +38,8 @@ const HomeTab = createBottomTabNavigator({
 
 const MainNavigator = createStackNavigator({
   Home: HomeTab,
+  Player,
+  Playlist
 
 }, {
   defaultNavigationOptions: {
@@ -47,8 +50,4 @@ const MainNavigator = createStackNavigator({
   }
 })
 
-const navigator = createSwitchNavigator({
-  Main: MainNavigator,
-})
-
-export default createAppContainer(navigator)
+export default createAppContainer(MainNavigator)

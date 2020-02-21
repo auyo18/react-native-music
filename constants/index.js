@@ -9,7 +9,6 @@ import {
   Ionicons
 }                               from '@expo/vector-icons'
 
-
 /**
  * 公共变量
  */
@@ -26,7 +25,7 @@ export const WINDOW_HEIGHT     = Dimensions.get('window').height
 export const initialHomeTabName = 'Recommend'
 
 // Service
-export const BASE_URL     = 'http://192.168.50.3:3200'
+export const BASE_URL = 'http://192.168.50.3:3000'
 
 // Storage
 export const storageKey = {
@@ -34,9 +33,9 @@ export const storageKey = {
   TAGS_KEY:          '__TAGS__'
 }
 
-//  Icon
+//  Menu
 export const HOME_MENU = {
-  Recommend: { name: '音乐馆', Icons: FontAwesome, icon: 'music' },
+  Recommend: { name: '发现', Icons: FontAwesome, icon: 'music' },
   Singer:    { name: '歌手', Icons: Ionicons, icon: 'md-microphone' },
   Rank:      { name: '排行', Icons: MaterialIcons, icon: 'whatshot' },
   User:      { name: '我的', Icons: AntDesign, icon: 'user' }
@@ -54,3 +53,31 @@ export const MORE_MENU = {
   About:           { name: '关于', Icons: AntDesign, icon: 'github' },
   Feedback:        { name: '反馈', Icons: AntDesign, icon: 'exclamationcircleo' },
 }
+
+// Status Code
+export const SUCCESS_CODE = 200
+
+// Player
+export const playModes = [
+  {
+    code:  0,
+    name:  'sequence',
+    title: '顺序播放',
+    Icon:  Ionicons,
+    icon:  'ios-repeat'
+  },
+  {
+    code:  1,
+    name:  'loop',
+    title: '单曲循环',
+    Icon:  MaterialIcons,
+    icon:  'looks-one',
+  },
+  {
+    code:  2,
+    name:  'random',
+    title: '随机播放',
+    Icon:  Ionicons,
+    icon:  'ios-shuffle'
+  },
+]

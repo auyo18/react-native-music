@@ -1,7 +1,17 @@
 import service from '../utils/request'
 
-export function getRecommend() {
+export function getBanner() {
   return service({
-    url: '/getRecommend'
+    url:    '/banner',
+    params: {
+      type: 1
+    }
+  })
+}
+
+export function getTopList(params) {
+  return service({
+    url: '/top/list',
+    params
   })
 }
